@@ -1,0 +1,149 @@
+#include<stdio.h>
+#include<graphics.h>
+#include<conio.h>
+#define N 9
+
+
+int isRight(int puzzle[N][N],int row,int col,int num)
+{
+    int i,j,sqrR,sqrC;
+    for(i=0;i<N;i++)               //ROW CHECK
+        if(puzzle[row][i]==num)
+            return 0;
+     for(j=0;j<N;j++)              //COLUMN CHECK
+        if(puzzle[j][col]==num)
+            return 0;
+    sqrR=row-row%3;
+    sqrC=col-col%3;
+    for(i=0;i<3;i++)               //SMALL SQUARE CHECK
+        for(j=0;j<3;j++)
+            if(puzzle[i+sqrR][j+sqrC]==num)
+                return 0;
+                return 1;
+}
+
+
+int solver(int puzzle[N][N],int row,int col)
+{
+    int num;
+    if(row==N-1&&col==N)       //LAST CELL CHECK
+        return 1;
+    if(col==N)                //LAST CELL IN A ROW CHECK
+    {
+        row++;
+        col = 0;
+    }
+    if(puzzle[row][col]>0)
+        return solver(puzzle,row,col+1);
+    for(num=1;num<=N;num++)
+    {
+        if(isRight(puzzle,row,col,num)==1)
+        {
+            puzzle[row][col]=num;
+            if(solver(puzzle,row,col+1)==1)          //BACKTRACK APPROACH
+                return 1;
+        }
+        puzzle[row][col]=0;
+    }
+    return 0;
+}
+
+
+void display(int puzzle[N][N])
+{
+    int i,j,k,n=170;
+    char str[81];
+    int gdriver=DETECT,gmod;
+    initgraph(&gdriver,&gmod,"c:\\tc\\bgi");
+    setbkcolor(YELLOW);
+    setcolor(BLUE);
+    settextstyle(7,0,2);
+    cleardevice();
+    outtextxy(100,100,"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    outtextxy(100,120," :) THE SOLVED SUDOKU PUZZLE (: ");
+    outtextxy(100,150,"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    for(i=0;i<9;i++)
+     {
+         j=170;
+         n=n+20;
+         for(k=0;k<9;k++)
+         {
+             setcolor(BLUE);
+             sprintf(str,"%d",puzzle[i][k]);
+             setcolor(RED);
+             outtextxy(j+3,n-20,"__");
+             outtextxy(j+5,n,"|");
+             setcolor(BLUE);
+             outtextxy(j+20,n,str);
+             j=j+30;
+         }
+         setcolor(RED);
+         outtextxy(j+5,n,"|");
+     }
+     setcolor(RED);
+     outtextxy(173,n,"_ _ _ _ _ _ _ _ ");
+     getch();
+}
+
+
+void effect()
+{
+    int gdriver=DETECT,gmod;
+    initgraph(&gdriver,&gmod,"c:\\tc\\bgi");
+    setbkcolor(YELLOW);
+    setcolor(BLUE);
+    settextstyle(7,0,4); 
+    outtextxy(0,42,"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    setcolor(BLUE);    
+    settextstyle(0,0,4);
+    outtextxy(120,100,"SUDOKU SOLVER");
+    outtextxy(120,107,"_________________");
+    settextstyle(8,0,2);
+    setcolor(BLUE);
+    outtextxy(200,300,"ENTER THE 9X9 PUZZLE");
+    setcolor(LIGHTBLUE);
+    settextstyle(3,0,1);
+    outtextxy(140,340,"(Enter zeroes instead of blank spaces)");
+    settextstyle(6,0,1);
+    outtextxy(178,360,"PRESS ANY KEY TO ENTER THE PUZZLE");
+    setcolor(BLUE);
+    settextstyle(7,0,4);
+    outtextxy(0,420,"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ");
+    getch();
+}
+
+
+void error()
+{
+    int gdriver=DETECT,gmod;
+    initgraph(&gdriver,&gmod,"c:\\tc\\bgi");
+    setbkcolor(YELLOW);
+    setcolor(BLUE);
+    settextstyle(7,0,2);
+    outtextxy(100,200,"OOPS!!ENTER THE RIGHT PUZZLE :(");
+    getch();
+} 
+
+
+int main()
+{
+    int puzzle[N][N],i,j;
+    effect();
+    closegraph();
+    for(i=0;i<N;i++)
+       for(j=0;j<N;j++) 
+         scanf("%d",&puzzle[i][j]);   
+    
+    if(solver(puzzle,0,0)==1)
+    {
+        display(puzzle);
+    }
+    else
+    {
+        error();
+    }
+    closegraph();
+    
+    clrscr();
+    return 0;
+}
